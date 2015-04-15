@@ -2,54 +2,92 @@
 % Krzysztof Adamski
 % 17.04.2015
 
----
-
-Proces debugowania:
+## Proces debugowania
 
 - Odkrycie błędu.
-- Wyizolowanie oraz identyfikacja przyczyny błędu.
+- **Wyizolowanie oraz identyfikacja przyczyny błędu.**
 - Usunięcie defektu.
 
 ---
 
-Techniki debugowania:
+## Techniki debugowania
 
 - printf debugging
-- interactive debugging
 - post-mortem debugging
+- interactive debugging
 
----
+# printf debugging
+
+## Najprostsze użycie tej techniki:
+
+1. Szukamy okolic kodu gdzie jest problem.
+2. Dodajemy kilka wywołań printk().
+3. Rekompilacja, reboot.
+4. Obserwujemy log (dmesg).
+5. Poznaliśmy pewne szczegóły odnośnie ścieżki kodu prowadzącej do błędu.
+Potrzebujemy trochę więcej informacji.
+6. Powrót do kroku 2.
+
+## printk
+
+## Problemy:
+
+- szum informacyjny.
+- długie cykle wymagające rekompilacji i reboot.
+- duży koszt printk może ukryć błąd.
+
+## dynamic debug
+
+## ftrace-printk
+
+## kprobes
 
 # Post-mortem debugging
+
+## Definicja
 
 Analiza przyczyny powstania błędu po tym jak program, który uległ awarii
 przestał już działać. Najczęściej analizowany jest zrzut pamięci (core dump)
 oraz stacktrace (backtrace).
 
-Documentation/kdump/kdump.txt
+---
+
+## Kdump
+
+*Documentation/kdump/kdump.txt*
+
+* Część pamięci jest alokowana na tzw. dump kernel
+* Za pomcą kexec ładowany jest dump kernel
+* W przypadku wyjątku bootowany jest (kexec) dump kernel
+* Obraz pamięci (`crash dump`) dostępny w postaci ELF w `/proc/vmcore`
+* Analiza pliku `crash dump` za pomocą `crash util` ([http://people.redhat.com/anderson/](http://people.redhat.com/anderson/))
 
 ---
 
-Przykład analizy Kdump:
+## Kdump + Crash DEMO
 
-```
-crash> dmesg |grep -A29 Oops | sed -e '1,10p' -e '$p' -e 'd' | cut -d ' ' -f 2-
+# Przykład z życia wzięty
+
+## analiza
+
+<pre><code>
+crash&gt; dmesg |grep -A29 Oops | sed -e '1,10p' -e '$p' -e 'd' | cut -d ' ' -f 2-
 Internal error: Oops - undefined instruction: 0 [#1] PREEMPT SMP ARM
 Modules linked in: wlan(O) texfat(PO) mpq_dmx_hw_plugin mpq_adapter dvb_core tspp mhl_sii8620_8061_drv(O) [last unloaded: wlan]
 CPU: 2    Tainted: P           O  (3.4.0-perf-g44071e7 #1)
 PC is at kgsl_ioctl+0x204/0x344
 LR is at 0xffffffff
-pc : [<c0444080>]    lr : [<ffffffff>]    psr: 00070013
+pc : <b style='color: yellow'>[&lt;c0444080&gt;]</b>    lr : [&lt;ffffffff&gt;]    psr: 00070013
 sp : e3e7bea0  ip : eabdf8c0  fp : c044748c
 r10: 81a9a874  r9 : c0f70980  r8 : de43b100
 r7 : e3e7beac  r6 : 400c0907  r5 : ffffffff  r4 : eabdf8c0
 r3 : 00000000  r2 : 00000000  r1 : e3e7a000  r0 : c0f7096c
 Code: e1530005 01520004 0a00000b e2800fe5 (ed8d1004)
-```
+</code></pre>
 
 Wyjątek 'undefined instruction' wystąpił kiedy `PC=0xc0444080`.
 
----
+## analiza c.d.
 
 Sprawdźmy co znajduje się pod adresem wskazywanym przez PC:
 
@@ -62,14 +100,14 @@ crash> dis c0444080
 
 Instrukcja wygląda w porządku jednak procesor nie mógł jej zdekodować. Czemu?
 
----
+## analiza c.d.
 
 Sprawdźmy jeszcze raz jaki kod wykonywał procesor:
 
-```
-crash> dmesg |grep -A29 Oops | tail -1 | cut -d ' ' -f 2-
-Code: e1530005 01520004 0a00000b e2800fe5 (ed8d1004)
-```
+<pre><code>
+crash&gt; dmesg |grep -A29 Oops | tail -1 | cut -d ' ' -f 2-
+Code: e1530005 01520004 0a00000b e2800fe5 (<b style="color: yellow">ed8d1004</b>)
+</code></pre>
 
 I jaki jest pod PC:
 
@@ -82,28 +120,28 @@ c0444080:  e58d1004                              ....
 
 Szybkie porównanie obu wartości:
 
-```
-crash> eval ed8d1004 | grep bin
-     binary: 11101101100011010001000000000100
-crash> eval e58d1004 | grep bin
-     binary: 11100101100011010001000000000100
-```
+<pre><code>
+crash&gt; eval ed8d1004 | grep bin
+     binary: 1110<b style="color: yellow">1</b>101100011010001000000000100
+crash&gt; eval e58d1004 | grep bin
+     binary: 1110<b style="color: yellow">0</b>101100011010001000000000100
+</pre></code>
 
 . . .
 
 Jeden bit się różni !
 
----
+## analiza c.d.
 
 Jako jaka instrukcja zdekoduje się ta wartość?
 
-```
+<pre><code>
 crash> search ed8d1004
 e3e7bd5c: ed8d1004
 crash> dis e3e7bd5c
 dis: WARNING: e3e7bd5c: no associated kernel symbol found
-   0xe3e7bd5c:  stc     0, cr1, [sp, #16]
-```
+   0xe3e7bd5c:  <b style="color: yellow">stc     0, cr1, [sp, #16]</b>
+</code></pre>
 
 `STC` to instrukcja zapisu do koprocesora, w tym przypadku nieistniejącego CR1.
 
@@ -113,9 +151,15 @@ dis: WARNING: e3e7bd5c: no associated kernel symbol found
 
 Bitflip w cache CPU!
 
----
+# interactive debugging
 
-# Kontakt
+## KDB / KGDB
+
+# Pytania?
+
+## Dziękuję za uwagę
+
+Kontakt:
 
 [k@japko.eu](mailto:k@japko.eu)
 
