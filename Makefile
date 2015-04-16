@@ -1,5 +1,5 @@
 TEMPLATE=pandoc-templates/default.revealjs
-PANDOC_OPTS=-t revealjs --template ${TEMPLATE} -V theme=white
+PANDOC_OPTS=-t revealjs --template ${TEMPLATE} -V theme=white -V css=data/custom.css
 FILENAME=slides
 
 .PHONY: all clean
