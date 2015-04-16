@@ -10,4 +10,4 @@ ${FILENAME}.html: ${FILENAME}.md
 	pandoc ${PANDOC_OPTS} -s $< -o $@
 
 clean:
-	rm ${FILENAME}.html
+	rm -f ${FILENAME}.html

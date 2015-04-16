@@ -1,0 +1,32 @@
+# ssh -p 2222 root@localhost
+# cat ~/bin/kdump_load.sh
+#!/bin/sh
+kexec -p /root/kdump/bzImage --initrd=/root/kdump/rootfs.cpio --append=single irqpoll max_cpus=1 reset_devices
+# ~/bin/kdump_load.sh
+# echo c > /proc/sysrq-trigger
+
+// KDUMP KERNEL
+# mount -a
+# mount /dev/sda1 /mnt/
+# cp /proc/vmcore /mnt/root/
+# reboot
+
+// BACK IN SYSTEM
+# ssh -p 2222 root@localhost
+# cat /root/bin/crash.sh
+#!/bin/sh
+~/crash-7.1.0/crash /usr/lib/debug/vmlinux-`uname -r` $@
+# ~/bin/crash.sh vmcore
+
+> help
+> log
+> ps
+> bt
+> fp
+> task
+> struct task_struct.mm TASK_ADDR
+> struct mm_struct MM_ADDR
+/find env
+> gcore
+# gdb /bin/bash core.*.bash
+# p (char*)ADDR

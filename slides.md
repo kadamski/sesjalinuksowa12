@@ -55,6 +55,10 @@ potrzebujemy trochę więcej informacji.
 - `<debugfs>/dynamic_debug/control`
 - `echo "file net/ipv4/ping.c line 696 +p"`
 
+. . .
+
+DEMO
+
 ## ftrace-printk
 
 - zapisuje tylko do bufora cyklicznego, pomijając konsolę
@@ -62,6 +66,10 @@ potrzebujemy trochę więcej informacji.
 - `<debugfs>/tracing/trace`
 - Łatwa synchronizacja z userspace dzięki `trace_marker` oraz `tracing_on`/`tracing_off`
 - integracja z ftrace
+
+. . .
+
+DEMO
 
 ## kprobetrace
 
@@ -71,6 +79,10 @@ potrzebujemy trochę więcej informacji.
 - możliwość wypisania argumentów funkcji oraz kodu powrotu
 - używa bufora ftrace
 - `<debugfs>/tracing/kprobe_events`
+
+. . .
+
+DEMO
 
 # Post-mortem debugging
 
