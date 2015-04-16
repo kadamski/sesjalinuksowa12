@@ -1,4 +1,4 @@
-% Debugowanie jądra Linuksa
+% Debugowanie jądra Linux
 % Krzysztof Adamski
 % 17.04.2015
 
@@ -18,29 +18,59 @@
 
 # printf debugging
 
-## Najprostsze użycie tej techniki:
+## Najprostsze użycie tej techniki
 
 1. Szukamy okolic kodu gdzie jest problem.
 2. Dodajemy kilka wywołań printk().
 3. Rekompilacja, reboot.
 4. Obserwujemy log (dmesg).
-5. Poznaliśmy pewne szczegóły odnośnie ścieżki kodu prowadzącej do błędu.
-Potrzebujemy trochę więcej informacji.
+5. Poznaliśmy pewne szczegóły odnośnie ścieżki kodu prowadzącej do błędu,
+potrzebujemy trochę więcej informacji.
 6. Powrót do kroku 2.
 
 ## printk
 
-## Problemy:
+*Documentation/printk-formats.txt*
 
-- szum informacyjny.
-- długie cykle wymagające rekompilacji i reboot.
-- duży koszt printk może ukryć błąd.
+- wyjście zapisywane w buforze cyklicznym (16KB)
+- kilka poziomów logowania (`/proc/sys/kernel/printk`)
+- do odczytania przez `dmesg`, `/proc/kmsg`, `klogd` oraz na konsoli
+- `printk_ratelimited`, `printk_once`
+- przydatny trik: `echo msg > /dev/kmsg`
+
+
+## printk, problemy
+
+- szum informacyjny
+- duży koszt printk może ukryć błąd
+- długie cykle wymagające rekompilacji i reboot
 
 ## dynamic debug
 
+*Documentation/dynamic-debug-howto.txt*
+
+- wyłączone wyrażenia mają znikomy overhead
+- dużo jest już dodanych do kernela
+- brak potrzeby kompilacji i rebootu
+- `<debugfs>/dynamic_debug/control`
+- `echo "file net/ipv4/ping.c line 696 +p"`
+
 ## ftrace-printk
 
-## kprobes
+- zapisuje tylko do bufora cyklicznego, pomijając konsolę
+- bezpieczny w kontekście przerwania
+- `<debugfs>/tracing/trace`
+- Łatwa synchronizacja z userspace dzięki `trace_marker` oraz `tracing_on`/`tracing_off`
+- integracja z ftrace
+
+## kprobetrace
+
+*Linux/Documentation/trace/kprobetrace.txt*
+
+- dynamicznie włączane eventy przy wejściu/wyjściu z funkcji
+- możliwość wypisania argumentów funkcji oraz kodu powrotu
+- używa bufora ftrace
+- `<debugfs>/tracing/kprobe_events`
 
 # Post-mortem debugging
 
@@ -70,8 +100,7 @@ oraz stacktrace (backtrace).
 
 ## analiza
 
-<pre><code>
-crash&gt; dmesg |grep -A29 Oops | sed -e '1,10p' -e '$p' -e 'd' | cut -d ' ' -f 2-
+<pre><code>crash&gt; dmesg |grep -A29 Oops | sed -e '1,10p' -e '$p' -e 'd' | cut -d ' ' -f 2-
 Internal error: Oops - undefined instruction: 0 [#1] PREEMPT SMP ARM
 Modules linked in: wlan(O) texfat(PO) mpq_dmx_hw_plugin mpq_adapter dvb_core tspp mhl_sii8620_8061_drv(O) [last unloaded: wlan]
 CPU: 2    Tainted: P           O  (3.4.0-perf-g44071e7 #1)
@@ -104,8 +133,7 @@ Instrukcja wygląda w porządku jednak procesor nie mógł jej zdekodować. Czem
 
 Sprawdźmy jeszcze raz jaki kod wykonywał procesor:
 
-<pre><code>
-crash&gt; dmesg |grep -A29 Oops | tail -1 | cut -d ' ' -f 2-
+<pre><code>crash&gt; dmesg |grep -A29 Oops | tail -1 | cut -d ' ' -f 2-
 Code: e1530005 01520004 0a00000b e2800fe5 (<b style="color: yellow">ed8d1004</b>)
 </code></pre>
 
@@ -116,12 +144,11 @@ crash> rd c0444080
 c0444080:  e58d1004                              ....
 ```
 
-. . .
+## analiza c.d.
 
 Szybkie porównanie obu wartości:
 
-<pre><code>
-crash&gt; eval ed8d1004 | grep bin
+<pre><code>crash&gt; eval ed8d1004 | grep bin
      binary: 1110<b style="color: yellow">1</b>101100011010001000000000100
 crash&gt; eval e58d1004 | grep bin
      binary: 1110<b style="color: yellow">0</b>101100011010001000000000100
@@ -133,10 +160,9 @@ Jeden bit się różni !
 
 ## analiza c.d.
 
-Jako jaka instrukcja zdekoduje się ta wartość?
+Jako jaką instrukcja zdekoduje się ta wartość?
 
-<pre><code>
-crash> search ed8d1004
+<pre><code>crash> search ed8d1004
 e3e7bd5c: ed8d1004
 crash> dis e3e7bd5c
 dis: WARNING: e3e7bd5c: no associated kernel symbol found
