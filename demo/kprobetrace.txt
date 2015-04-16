@@ -1,0 +1,6 @@
+# cd /sys/kernel/debug/tracing
+# echo 0 > events/kprobes/enable
+# echo "p __inet_insert_ifa" > kprobe_events
+# echo 1 > events/kprobes/enable
+# cat trace_pipe
+ip-416   [000] d... 631722.240247: p___inet_insert_ifa_0: (__inet_insert_ifa+0x0/0x1d4)

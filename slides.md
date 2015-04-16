@@ -38,17 +38,17 @@ potrzebujemy trochę więcej informacji.
 - `printk_ratelimited`, `printk_once`
 - przydatny trik: `echo msg > /dev/kmsg`
 
-
 ## printk, problemy
 
 - szum informacyjny
 - duży koszt printk może ukryć błąd
-- długie cykle wymagające rekompilacji i reboot
+- długie cykle rekompilacji i reboot
 
 ## dynamic debug
 
 *Documentation/dynamic-debug-howto.txt*
 
+- `pr_debug()`/`dev_dbg()`
 - wyłączone wyrażenia mają znikomy overhead
 - dużo jest już dodanych do kernela
 - brak potrzeby kompilacji i rebootu
@@ -179,7 +179,9 @@ Bitflip w cache CPU!
 
 # interactive debugging
 
-## KDB / KGDB
+## KDB
+
+## KGDB
 
 # Pytania?
 
