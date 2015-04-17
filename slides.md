@@ -92,6 +92,7 @@ DEMO
 
 - ftrace, perf_events, eBPF(?)
 - SystemTap, ktap, LTTng, DTrace, sysdig
+- <https://github.com/brendangregg/perf-tools>
 
 # Post-mortem debugging
 
@@ -111,7 +112,7 @@ oraz stacktrace (backtrace).
 * Za pomcą kexec ładowany jest dump kernel
 * W przypadku wyjątku bootowany jest (kexec) dump kernel
 * Obraz pamięci (`crash dump`) dostępny w postaci ELF w `/proc/vmcore`
-* Analiza pliku `crash dump` za pomocą `crash util` ([http://people.redhat.com/anderson/](http://people.redhat.com/anderson/))
+* Analiza pliku `crash dump` za pomocą `crash util` <http://people.redhat.com/anderson/>
 
 ---
 
@@ -208,10 +209,10 @@ Bitflip w cache CPU!
 
 ## Dziękuję za uwagę {data-background="data/Tieto_Logo_Primary_Blue.png" data-background-position="bottom right"}
 
-[k@japko.eu](mailto:k@japko.eu)
+<k@japko.eu>
 
-[http://github.com/kadamski/sesjalinuksowa12](http://github.com/kadamski/sesjalinuksowa12)
+<http://github.com/kadamski/sesjalinuksowa12>
 
 CV?
 
-[krzysztof.adamski@tieto.com](mailto:krzysztof.adamski@tieto.com)
+<krzysztof.adamski@tieto.com>
