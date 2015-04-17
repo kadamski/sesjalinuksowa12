@@ -1,6 +1,10 @@
-% Debugowanie jądra Linux
-% Krzysztof Adamski
-% 17.04.2015
+## Debugowanie jądra Linux {data-background="data/Tieto_Logo_Primary_Blue.png" data-background-position="bottom right"}
+
+Krzysztof Adamski
+
+17.04.2015
+
+---
 
 ## Proces debugowania
 
@@ -83,6 +87,11 @@ DEMO
 . . .
 
 DEMO
+
+## dynamic tracing
+
+- ftrace, perf_events, eBPF(?)
+- SystemTap, ktap, LTTng, DTrace, sysdig
 
 # Post-mortem debugging
 
@@ -197,11 +206,11 @@ Bitflip w cache CPU!
 
 # Pytania?
 
-## Dziękuję za uwagę
-
-Kontakt:
+## Dziękuję za uwagę {data-background="data/Tieto_Logo_Primary_Blue.png" data-background-position="bottom right"}
 
 [k@japko.eu](mailto:k@japko.eu)
+
+[http://github.com/kadamski/sesjalinuksowa12](http://github.com/kadamski/sesjalinuksowa12)
 
 CV?
 

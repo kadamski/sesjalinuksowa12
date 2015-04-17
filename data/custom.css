@@ -2,3 +2,8 @@
     background-color: #FFDDCC;
     border: 1px solid #BB9988;
 }
+
+.reveal .slide-background {
+    background-attachment: fixed;
+    background-size: auto;
+}
