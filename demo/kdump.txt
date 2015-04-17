@@ -23,6 +23,7 @@ kexec -p /root/kdump/bzImage --initrd=/root/kdump/rootfs.cpio --append=single ir
 > ps
 > bt
 > fp
+
 > task
 > struct task_struct.mm TASK_ADDR
 > struct mm_struct MM_ADDR

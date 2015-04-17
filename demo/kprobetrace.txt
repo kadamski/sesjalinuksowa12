@@ -5,3 +5,11 @@
 # ip a a dev eth0 1.2.3.4/32
 # cat trace_pipe
 ip-416   [000] d... 631722.240247: p___inet_insert_ifa_0: (__inet_insert_ifa+0x0/0x1d4)
+
+// calling convention for x86_64: RDI, RSI, RDX, RCX, R8, R9, XMM0-7
+# echo "p do_sys_open filename=+0(%si):string" > kprobe_events
+tmux-6012  [000] d... 39514.838958: myopen: (do_sys_open+0x0/0x250) filename="/proc/24860/cmdline"
+
+// Documentation/trace/events.txt
+# cat events/kprobes/myopen/format
+# echo "flags == 0x8000 || filename ~ *cmdline" > events/kprobes/myopen/filter

@@ -14,7 +14,7 @@ Krzysztof Adamski
 
 ---
 
-## Techniki debugowania
+## Sprint przez techniki debugowania
 
 - printf debugging
 - post-mortem debugging
@@ -49,14 +49,15 @@ potrzebujemy trochę więcej informacji.
 - długie cykle rekompilacji i reboot
 - słabo nadaje się na systemy produkcyjne
 
-## ftrace-printk
+## trace_printk
 
+- użycie `trace_printk` zamiast `printk`
+- lżeszy i bezpieczny w kontekście przerwania
 - zapisuje tylko do bufora cyklicznego, pomijając konsolę
-- bezpieczny w kontekście przerwania
 - `<debugfs>/tracing/trace`
 - Łatwa synchronizacja z userspace dzięki `trace_marker` oraz `tracing_on`/`tracing_off`
 - integracja z ftrace
-- pid a czasem nawet nazwa procesu
+- informacja o pid a czasem nawet nazwa procesu
 
 . . .
 
@@ -203,11 +204,29 @@ Bitflip w cache CPU!
 
 # interactive debugging
 
+## Wstęp
+
+- debugowanie przy użyciu klasycznego debuggera
+- w przypadku kernela dość inwazyjne - system jest zatrzymywany
+
 ## KDB
 
-- Klawiatura PS/2 lub konsola szeregowa
+*Documentation/DocBook/kgdb.tmpl*
+
+- nie jest potrzebne zewnętrzne oprogramowanie
+- klawiatura PS/2 lub konsola szeregowa
+- działa w oparciu o mechanizmy kgdb
+- może być uruchamiane automatycznie podczas panic
+
+. . .
+
+DEMO
 
 ## KGDB
+
+- umożliwia podłączenie gdb do kernela
+- wymagane są dwie osobne maszyny
+- konsola szeregowa + zewnętrzne patche na KGDBoE
 
 # Pytania?
 

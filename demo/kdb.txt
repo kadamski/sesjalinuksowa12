@@ -1,0 +1,17 @@
+# echo ttyS0 > /sys/module/kgdboc/parameters/kgdboc
+# echo g > /proc/sysrq-trigger
+
+[0]kdb> bp __inet_insert_ifa
+[0]kdb> go
+
+# ip a a dev eth0 1.2.3.4/32
+
+// go to kgdb
+[0]kgdb> kgdb
+
+# gdb ~/tmp/vmlinux
+(gdb) target remote /dev/ttyS0
+(gdb) bt
+
+// back to kdb
+$3#33
