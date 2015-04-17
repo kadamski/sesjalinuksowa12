@@ -47,6 +47,20 @@ potrzebujemy trochę więcej informacji.
 - szum informacyjny
 - duży koszt printk może ukryć błąd
 - długie cykle rekompilacji i reboot
+- słabo nadaje się na systemy produkcyjne
+
+## ftrace-printk
+
+- zapisuje tylko do bufora cyklicznego, pomijając konsolę
+- bezpieczny w kontekście przerwania
+- `<debugfs>/tracing/trace`
+- Łatwa synchronizacja z userspace dzięki `trace_marker` oraz `tracing_on`/`tracing_off`
+- integracja z ftrace
+- pid a czasem nawet nazwa procesu
+
+. . .
+
+DEMO
 
 ## dynamic debug
 
@@ -58,18 +72,6 @@ potrzebujemy trochę więcej informacji.
 - brak potrzeby kompilacji i rebootu
 - `<debugfs>/dynamic_debug/control`
 - `echo "file net/ipv4/ping.c line 696 +p"`
-
-. . .
-
-DEMO
-
-## ftrace-printk
-
-- zapisuje tylko do bufora cyklicznego, pomijając konsolę
-- bezpieczny w kontekście przerwania
-- `<debugfs>/tracing/trace`
-- Łatwa synchronizacja z userspace dzięki `trace_marker` oraz `tracing_on`/`tracing_off`
-- integracja z ftrace
 
 . . .
 
@@ -202,6 +204,8 @@ Bitflip w cache CPU!
 # interactive debugging
 
 ## KDB
+
+- Klawiatura PS/2 lub konsola szeregowa
 
 ## KGDB
 
